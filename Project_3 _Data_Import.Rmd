@@ -29,7 +29,9 @@ software_skills <-read.csv(file = "https://raw.githubusercontent.com/josephsimon
 
 ```{r}
  dt1 <- data.table(general_skills, key = "ï..Keyword")
+dt1$Skill_Set <- "Soft"
 dt2 <- data.table(software_skills, key = "ï..Keyword")
+dt2$Skill_Set <- "Tech"
  dt2 = subset(dt2, select = -c(LinkedIn.., Indeed.., SimplyHired.., Monster.., Avg.., GlassDoor.Self.Reported...2017, Difference) )
  
 result<-rbind(dt1, dt2)
@@ -40,7 +42,7 @@ result<-rbind(dt1, dt2)
 
 
 ```{r}
-head(results)
+head(result)
 ```
 
 ```{r}
