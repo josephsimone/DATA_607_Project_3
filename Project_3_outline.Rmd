@@ -1,0 +1,20 @@
+---
+title: "Project Proposal"
+author: "Joseph Simone"
+date: "10/16/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Already got two data sets from
+
+https://www.kaggle.com/discdiver/the-most-in-demand-skills-for-data-scientists/data
+
+Defines general and software skills for data scientist
+
+Imported and Tidyed data into on dataframe
+
+Now we can create a dictionary of software and general skills to compare/ contrast and plot 
