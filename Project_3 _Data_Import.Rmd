@@ -1,0 +1,54 @@
+---
+title: "Project 3 - Data Import"
+author: "Joseph Simone"
+date: "10/16/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(XML)
+library(RCurl)
+library(knitr)
+library(dplyr)
+library(plyr)
+library(tidyr)
+library(data.table)
+```
+
+```{r}
+ general_skills <- read.csv(file="https://raw.githubusercontent.com/josephsimone/DATA_607_Project_3/master/kaggle_ds_general_skills_revised.csv")
+```
+
+```{r}
+software_skills <-read.csv(file = "https://raw.githubusercontent.com/josephsimone/DATA_607_Project_3/master/kaggle_ds_job_listing_software.csv")
+```
+
+
+
+
+```{r}
+ dt1 <- data.table(general_skills, key = "ï..Keyword")
+dt2 <- data.table(software_skills, key = "ï..Keyword")
+ dt2 = subset(dt2, select = -c(LinkedIn.., Indeed.., SimplyHired.., Monster.., Avg.., GlassDoor.Self.Reported...2017, Difference) )
+ 
+result<-rbind(dt1, dt2)
+
+
+```
+
+
+
+```{r}
+head(results)
+```
+
+```{r}
+names(result)[names(result) == "ï..Keyword"] <- "Keyword"
+```
+
+
+```{r}
+write.csv(result, file = "joined_df.csv",row.names=FALSE)
+```
+
