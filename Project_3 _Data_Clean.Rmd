@@ -165,6 +165,14 @@ x
 ```
 
 
+### Top ten Technical skills as a percentage of total Data Science jobs
+
+```{r}
+y <- plot_ly(top_10_soft, x = ~ top_10_soft, y = top_10_soft$Total, type = 'bar', name = top_10_soft$Keyword)
+y
+```
+
+
 
 ##Bar Graphs
 ### Top 10 Techs as a pecentage of total data science jobs by job site
@@ -179,6 +187,28 @@ s <- plot_ly(data, x = ~Keyword, y = ~LinkedIn, type = 'bar', name = "Linkedin")
   add_trace(y = ~SimplyHired, name = "SimplyHired") %>% 
   add_trace(y = ~Monster, name = "Monster") %>% 
   add_trace(y = ~Total, name = "Average") %>% 
-  layout(title = 'Technical Skills by Job Site', yaxis = list(title = '% of Data Science Jobs'), xaxis = list(title = 'Tech Skills'), barmode = 'group')
+  layout(title = 'Technical Skills by Job Sites', yaxis = list(title = '% of Data Science Jobs'), xaxis = list(title = 'Tech Skills'), barmode = 'group')
 s
 ```
+
+
+
+##Bar Graphs
+### Top 10 Techs as a pecentage of total data science jobs by job site
+
+```{r, eval=TRUE}
+top_10_soft_visual <- data.frame("Keyword"=top_10_soft, top_10_soft)
+head(top_10_soft_visual, 2)
+data2 <- top_10_soft_visual[,c('Keyword', 'LinkedIn', 'Indeed', 'SimplyHired', 'Monster', 'Total')]
+head(data, 2)
+t <- plot_ly(data2, x = ~Keyword, y = ~LinkedIn, type = 'bar', name = "Linkedin") %>%
+  add_trace(y = ~Indeed, name = "Indeed") %>% 
+  add_trace(y = ~SimplyHired, name = "SimplyHired") %>% 
+  add_trace(y = ~Monster, name = "Monster") %>% 
+  add_trace(y = ~Total, name = "Average") %>% 
+  layout(title = 'Non-Technical Skills by Job Sites', yaxis = list(title = '% of Data Science Jobs'), xaxis = list(title = 'Non-Tech Skills'), barmode = 'group')
+t
+```
+
+
+
