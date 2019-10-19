@@ -76,39 +76,109 @@ ds_skills$Monster <- ((ds_skills$Monster)/((Monster*10)))
 ds_skills$Total <- ((ds_skills$Total/((Total*100))))
 head(ds_skills)
 ```
+# Top 10 Soft Skills for Data Scientists
+
+### Data transformations for visualization
 
 ```{r}
 ds_skills_soft <- filter(ds_skills, ds_skills$Skill_Set == "Soft")
 dim(ds_skills_soft)
 head(ds_skills_soft, 20)
 ds_skills_soft <- arrange(ds_skills_soft, desc(Total))
-head(ds_skills_soft)
-#Top 10 skills
+head(ds_skills_soft, 2)
+#Top 10 soft skills
 ds_skills_soft <- ds_skills_soft[1:10,c(1,3:7)]
-ds_skills_soft
-ds_skills_soft$Keyword
+head(ds_skills_soft, 2)
+#ds_skills_soft$Keyword
 ```
+
+
+# Top ten Soft skills as a percentage of total Data Science jobs
 
 ```{r}
-library(plotly)
-plot_ly(ds_skills_soft, x = ~ ds_skills_soft, y = ds_skills_soft$Total, type = 'bar', name = ds_skills_soft$Keyword)
+p <- plot_ly(ds_skills_soft, x = ~ ds_skills_soft, y = ds_skills_soft$Total, type = 'bar', name = ds_skills_soft$Keyword)
+p
 ```
 
+
+#Bar Graphs
+## Top 10 Soft as a pecentage of total data science jobs by job site
+
+```{r}
+top_10_soft_visual <- data.frame("Keyword"=ds_skills_soft, ds_skills_soft)
+head(top_10_soft_visual, 2)
+data_soft <- top_10_soft_visual[,c('Keyword', 'LinkedIn', 'Indeed', 'SimplyHired', 'Monster', 'Total')]
+head(data_soft, 2)
+q <- plot_ly(data_soft, x = ~Keyword, y = ~LinkedIn, type = 'bar', name = "Linkedin") %>%
+  add_trace(y = ~Indeed, name = "Indeed") %>% 
+  add_trace(y = ~SimplyHired, name = "SimplyHired") %>% 
+  add_trace(y = ~Monster, name = "Monster") %>% 
+  add_trace(y = ~Total, name = "Average") %>% 
+  layout(title = 'Soft Skills by Job Site', yaxis = list(title = '% of Data Science Jobs'), xaxis = list(title = 'Soft Skills'), barmode = 'group')
+q
+```
+
+
+# Top 10 Non-Technical Skills for Data Scientists
+
+### Data transformations for visualization
+
+```{r}
+ds_skills_soft <- filter(ds_skills, ds_skills$Skill_Set == "Soft")
+dim(ds_skills_soft)
+# View first 20 non-technical skills
+head(ds_skills_soft, 20)
+#Arrange data from largest to smallest by the Totals column
+ds_skills_tech <- arrange(ds_skills_soft, desc(Total))
+head(ds_skills_soft, 2)
+#Filter out only the Top 10 non-technical skills
+top_10_soft <- ds_skills_soft[1:10,c(1,3:7)]
+head(top_10_soft, 2)
+
+```
+
+
+# Top 10 Technical Skills for Data Scientists
+
+### Data transformations for visualization
 
 ```{r}
 ds_skills_tech <- filter(ds_skills, ds_skills$Skill_Set == "Tech")
 dim(ds_skills_tech)
+# View first 20 skills
 head(ds_skills_tech, 20)
+#Arrange data from largest to smallest by the Totals column
 ds_skills_tech <- arrange(ds_skills_tech, desc(Total))
-head(ds_skills_tech)
-#Top 10 skills
+head(ds_skills_tech, 2)
+#Filter out only the Top 10 technical skills
 top_10_tech <- ds_skills_tech[1:10,c(1,3:7)]
-top_10_tech
-top_10_tech$Keyword
+head(top_10_tech, 2)
+#top_10_tech$Keyword
 ```
 
 
+### Top ten Technical skills as a percentage of total Data Science jobs
+
 ```{r}
-library(plotly)
-plot_ly(top_10_tech, x = ~ top_10_tech, y = top_10_tech$Total, type = 'bar', name = top_10_tech$Keyword)
+x <- plot_ly(top_10_tech, x = ~ top_10_tech, y = top_10_tech$Total, type = 'bar', name = top_10_tech$Keyword)
+x
+```
+
+
+
+##Bar Graphs
+### Top 10 Techs as a pecentage of total data science jobs by job site
+
+```{r, eval=TRUE}
+top_10_tech_visual <- data.frame("Keyword"=top_10_tech, top_10_tech)
+head(top_10_tech_visual, 2)
+data <- top_10_tech_visual[,c('Keyword', 'LinkedIn', 'Indeed', 'SimplyHired', 'Monster', 'Total')]
+head(data, 2)
+s <- plot_ly(data, x = ~Keyword, y = ~LinkedIn, type = 'bar', name = "Linkedin") %>%
+  add_trace(y = ~Indeed, name = "Indeed") %>% 
+  add_trace(y = ~SimplyHired, name = "SimplyHired") %>% 
+  add_trace(y = ~Monster, name = "Monster") %>% 
+  add_trace(y = ~Total, name = "Average") %>% 
+  layout(title = 'Technical Skills by Job Site', yaxis = list(title = '% of Data Science Jobs'), xaxis = list(title = 'Tech Skills'), barmode = 'group')
+s
 ```
