@@ -1,0 +1,299 @@
+---
+title: "Data 603 Project 3"
+author: "Joseph Simone & Kigamba Samuel"
+date: "10/20/2019"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+
+library(XML)
+library(RCurl)
+library(knitr)
+library(dplyr)
+library(plyr)
+library(tidyr)
+library(plotly)
+library(tidyselect)
+library(data.table)
+library(png)
+```
+
+
+# Project # 3 - Data Scienctist Skills Compared
+
+### Objective
+This is a project for your entire class section to work on together, since being able to work effectively on a virtual team is a key “soft skill” for data scientists. Please note especially the requirement about making a presentation during our first meetup after the project is due.
+
+W. Edwards Deming said, “In God we trust, all others must bring data.” Please use data to answer the question, “Which are the most valued data science skills?” Consider your work as an exploration; there is not necessarily a “right answer.”
+
+
+### Background 
+
+When researching for this project, this study https://365datascience.com/research-into-1001-data-scientist-profiles/, has findings that fits the critia needed to be calculated in order to complete this project. However, as a team, we needed some sort of data pool to start calulating perameters to answer a research question(s).
+
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/journal.png"
+include_graphics(imgage)
+```
+
+With some futher research, we found a similar project that wanted to answer a similar question. 
+
+
+https://www.kaggle.com/discdiver/the-most-in-demand-skills-for-data-scientists
+
+
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/kaggle.png"
+include_graphics(imgage)
+```
+
+For this project we used the two main data-sets from the above kaggle web-page to answer our research question(s)
+
+kaggle_ds_job_listing_software.csv & kaggle_ds_general_skills_revised.csv
+
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/kaggle_data.png"
+include_graphics(imgage)
+```
+
+
+```{r}
+ general_skills <- read.csv(file="https://raw.githubusercontent.com/josephsimone/DATA_607_Project_3/master/kaggle_ds_general_skills_revised.csv")
+head(general_skills)
+```
+
+
+```{r}
+software_skills <-read.csv(file = "https://raw.githubusercontent.com/josephsimone/DATA_607_Project_3/master/kaggle_ds_job_listing_software.csv")
+```
+
+## Research Question
+
+##### What are the most important Techology based skill and Soft Skill, respectively, when hiring a Data Scientist?
+
+##### Overall, what is the most sought after skill for a Data Scientist? 
+
+
+## Data import and cleaning
+
+As a team, we thought it be best to join these two data-sets, cleaning the respective data-frames into similar formats to be merged. 
+
+```{r}
+dt1 <- data.table(general_skills, key = "ï..Keyword")
+dt1$Skill_Set <- "Soft"
+dt2 <- data.table(software_skills, key = "ï..Keyword")
+dt2$Skill_Set <- "Tech"
+ dt2 = subset(dt2, select = -c(LinkedIn.., Indeed.., SimplyHired.., Monster.., Avg.., GlassDoor.Self.Reported...2017, Difference) )
+```
+
+
+## Combine Data-frames
+```{r}
+result<-rbind(dt1, dt2)
+```
+
+
+## Explore newly created data-frame
+```{r}
+head(result)
+```
+
+
+## Rename variable 
+```{r}
+names(result)[names(result) == "ï..Keyword"] <- "Keyword"
+```
+
+## Export to .csv
+```{r}
+write.csv(result, file = "joined_df2.csv",row.names=FALSE)
+```
+
+
+## Importing newly created csv
+```{r}
+ds_skills <- read.csv("joined_df2.csv")
+head(ds_skills)
+```
+
+
+## Data-frame cleaning and tidying
+
+```{r}
+ds_skills$Total <- rowSums(sapply(ds_skills[,c(2:5)], as.numeric))
+ds_skills <- mutate(ds_skills[, c(1,6,2:5,7)])
+ds_skills <- data.frame(ds_skills)
+colnames(ds_skills)
+head(ds_skills)
+```
+
+
+
+## Creation of New Variable 
+
+These two combined data-sets used the amount of keywords present during a general search on well known job recruitment websites, to fill in its' values. As a team, we thought it was more effective to create an average out of these values to get a better understanding of the dataset.
+
+```{r}
+LinkedIn <- 8610
+Indeed <- 5138
+SimplyHired <- 3829
+Monster <- 3746
+Total <- LinkedIn + Indeed + SimplyHired + Monster
+ds_skills$LinkedIn <- ((ds_skills$LinkedIn)/(LinkedIn*100))
+ds_skills$Indeed <- ((ds_skills$Indeed)/(Indeed*100))
+ds_skills$SimplyHired <- ((ds_skills$SimplyHired)/(SimplyHired*100))
+ds_skills$Monster <- ((ds_skills$Monster)/((Monster*10)))
+ds_skills$Total <- ((ds_skills$Total/((Total*100))))
+head(ds_skills)
+```
+
+
+# Top 10 Soft Skills for Data Scientists
+
+### Data transformations for visualization
+
+```{r}
+ds_skills_soft <- filter(ds_skills, ds_skills$Skill_Set == "Soft")
+dim(ds_skills_soft)
+head(ds_skills_soft, 20)
+ds_skills_soft <- arrange(ds_skills_soft, desc(Total))
+head(ds_skills_soft, 2)
+#Top 10 soft skills
+ds_skills_soft <- ds_skills_soft[1:10,c(1,3:7)]
+head(ds_skills_soft, 2)
+#ds_skills_soft$Keyword
+```
+
+
+# Top ten Soft skills as a percentage of total Data Science jobs
+
+```{r}
+p <- plot_ly(ds_skills_soft, x = ~ ds_skills_soft, y = ds_skills_soft$Total, type = 'bar', name = ds_skills_soft$Keyword)
+p
+```
+
+
+#Bar Graphs
+## Top 10 Soft as a pecentage of total data science jobs by job site
+
+```{r}
+top_10_soft_visual <- data.frame("Keyword"=ds_skills_soft, ds_skills_soft)
+head(top_10_soft_visual, 2)
+data_soft <- top_10_soft_visual[,c('Keyword', 'LinkedIn', 'Indeed', 'SimplyHired', 'Monster', 'Total')]
+
+```
+
+
+# Top 10 Non-Technical Skills for Data Scientists
+
+### Data transformations for visualization
+
+```{r}
+ds_skills_soft <- filter(ds_skills, ds_skills$Skill_Set == "Soft")
+dim(ds_skills_soft)
+# View first 20 non-technical skills
+head(ds_skills_soft, 20)
+#Arrange data from largest to smallest by the Totals column
+ds_skills_soft <- arrange(ds_skills_soft, desc(Total))
+
+#Filter out only the Top 10 non-technical skills
+top_10_soft <- ds_skills_soft[1:10,c(1,3:7)]
+
+top_10_soft
+```
+
+
+# Top 10 Technical Skills for Data Scientists
+
+### Data transformations for visualization
+
+```{r}
+ds_skills_tech <- filter(ds_skills, ds_skills$Skill_Set == "Tech")
+dim(ds_skills_tech)
+# View first 20 skills
+head(ds_skills_tech, 20)
+#Arrange data from largest to smallest by the Totals column
+ds_skills_tech <- arrange(ds_skills_tech, desc(Total))
+
+#Filter out only the Top 10 technical skills
+top_10_tech <- ds_skills_tech[1:10,c(1,3:7)]
+
+top_10_tech
+```
+
+
+### Top ten Technical skills as a percentage of total Data Science jobs
+
+```{r}
+x <- plot_ly(top_10_tech, x = ~ top_10_tech, y = top_10_tech$Total, type = 'bar', name = top_10_tech$Keyword)
+x
+```
+
+
+### Top ten Technical skills as a percentage of total Data Science jobs
+
+```{r}
+y <- plot_ly(top_10_soft, x = ~ top_10_soft, y = top_10_soft$Total, type = 'bar', name = top_10_soft$Keyword)
+y
+```
+
+
+## Bar Graphs
+
+### Top 10 Techs as a pecentage of total data science jobs by job site
+
+```{r, eval=TRUE}
+top_10_tech_visual <- data.frame("Keyword"=top_10_tech, top_10_tech)
+head(top_10_tech_visual, 2)
+data <- top_10_tech_visual[,c('Keyword', 'LinkedIn', 'Indeed', 'SimplyHired', 'Monster', 'Total')]
+head(data, 2)
+s <- plot_ly(data, x = ~Keyword, y = ~LinkedIn, type = 'bar', name = "Linkedin") %>%
+  add_trace(y = ~Indeed, name = "Indeed") %>% 
+  add_trace(y = ~SimplyHired, name = "SimplyHired") %>% 
+  add_trace(y = ~Monster, name = "Monster") %>% 
+  add_trace(y = ~Total, name = "Average") %>% 
+  layout(title = 'Technical Skills by Job Sites', yaxis = list(title = '% of Data Science Jobs'), xaxis = list(title = 'Tech Skills'), barmode = 'group')
+s
+```
+
+
+## Bar Graphs
+
+### Top 10 Techs as a pecentage of total data science jobs by job site
+
+```{r, eval=TRUE}
+top_10_soft_visual <- data.frame("Keyword"=top_10_soft, top_10_soft)
+head(top_10_soft_visual, 2)
+data2 <- top_10_soft_visual[,c('Keyword', 'LinkedIn', 'Indeed', 'SimplyHired', 'Monster', 'Total')]
+head(data, 2)
+t <- plot_ly(data2, x = ~Keyword, y = ~LinkedIn, type = 'bar', name = "Linkedin") %>%
+  add_trace(y = ~Indeed, name = "Indeed") %>% 
+  add_trace(y = ~SimplyHired, name = "SimplyHired") %>% 
+  add_trace(y = ~Monster, name = "Monster") %>% 
+  add_trace(y = ~Total, name = "Average") %>% 
+  layout(title = 'Non-Technical Skills by Job Sites', yaxis = list(title = '% of Data Science Jobs'), xaxis = list(title = 'Non-Tech Skills'), barmode = 'group')
+t
+```
+
+
+## Top two "Technology" Skills for Data Scientist 
+```{r}
+head(ds_skills_tech, 2)
+```
+
+## Top two "Non-Technology" Skills for Data Scientist 
+```{r}
+head(ds_skills_soft, 2)
+```
+
+## Conclusion 
+
+There are many skills and skill-sets that employers are looking for when hiring a data-scientist. Given that Data Science is amultidisciplinary field, it is only fitting that there are both Techology based skills and Soft skills that companies look for in a data science. 
+
+The top Techology skill that employers are looking for when hiring a data scientist, according to this dataset, is AWS. 
+
+The top Soft skill that employers are looking for when hiring a data scientist, according to this dataset, is Software Development.
+
+The top Overall skill that employers are looking for when hiring a data scientist, according to this dataset, is AWS.
