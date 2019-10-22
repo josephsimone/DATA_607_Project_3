@@ -1,5 +1,5 @@
 ---
-title: "Tech and Soft Skills for Data Science"
+title: " Data Scienctist Skills: Compared"
 author: "Joseph Simone & Kigamba Samuel"
 date: "10/22/2019"
 output: ioslides_presentation
