@@ -131,7 +131,7 @@ Total <- LinkedIn + Indeed + SimplyHired + Monster
 ds_skills$LinkedIn <- ((ds_skills$LinkedIn)/(LinkedIn*100))
 ds_skills$Indeed <- ((ds_skills$Indeed)/(Indeed*100))
 ds_skills$SimplyHired <- ((ds_skills$SimplyHired)/(SimplyHired*100))
-ds_skills$Monster <- ((ds_skills$Monster)/((Monster*10)))
+ds_skills$Monster <- ((ds_skills$Monster)/((Monster*100)))
 ds_skills$Total <- ((ds_skills$Total/((Total*100))))
 ```
 
@@ -278,4 +278,4 @@ The top Techology skill that employers are looking for when hiring a data scient
 
 The top Soft skill that employers are looking for when hiring a data scientist, according to this dataset, is Analysis.
 
-The top Overall skill that employers are looking for when hiring a data scientist, according to this dataset, is Analysis.
+The top Overall skill that employers are looking for when hiring a data scientist, according to this dataset, is Python.
