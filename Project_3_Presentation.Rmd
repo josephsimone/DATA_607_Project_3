@@ -14,6 +14,7 @@ library(plyr)
 library(tidyr)
 library(plotly)
 library(tidyselect)
+library(tidyverse)
 library(data.table)
 library(png)
 
@@ -64,14 +65,14 @@ include_graphics(imgage)
 ***
 
 ```{r}
- general_skills <- read.csv(file="https://raw.githubusercontent.com/josephsimone/DATA_607_Project_3/master/kaggle_ds_general_skills_revised.csv")
+ general_skills <- read_csv(file="https://raw.githubusercontent.com/josephsimone/DATA_607_Project_3/master/kaggle_ds_general_skills_revised.csv")
 head(general_skills)
 ```
 
 ***
 
 ```{r}
-software_skills <-read.csv(file = "https://raw.githubusercontent.com/josephsimone/DATA_607_Project_3/master/kaggle_ds_job_listing_software.csv")
+software_skills <-read_csv(file = "https://raw.githubusercontent.com/josephsimone/DATA_607_Project_3/master/kaggle_ds_job_listing_software.csv")
 head(software_skills)
 ```
 
@@ -89,11 +90,11 @@ head(software_skills)
 - As a team, we thought it be best to join these two data-sets, cleaning the             respective data-frames into similar formats to be merged. 
  
 ```{r}
-dt1 <- data.table(general_skills, key = "ï..Keyword")
+dt1 <- as_tibble(general_skills, key = "ï..Keyword")
 dt1$Skill_Set <- "Soft"
-dt2 <- data.table(software_skills, key = "ï..Keyword")
+dt2 <- as_tibble(software_skills, key = "ï..Keyword")
 dt2$Skill_Set <- "Tech"
- dt2 = subset(dt2, select = -c(LinkedIn.., Indeed.., SimplyHired.., Monster.., Avg.., GlassDoor.Self.Reported...2017, Difference) )
+dt2 <- select(dt2,-c(6,7,8,9,10,11,12))
 ```
 
 
@@ -143,33 +144,26 @@ Set up for Bar Graphs
 
 ```{r}
 ds_skills_soft <- filter(ds_skills, ds_skills$Skill_Set == "Soft")
-top_10_soft_visual <- data.frame("Keyword"=ds_skills_soft, ds_skills_soft)
+dim(ds_skills_soft)
+head(ds_skills_soft, 20)
+ds_skills_soft <- arrange(ds_skills_soft, desc(Total))
 
-data_soft <- top_10_soft_visual[,c('Keyword', 'LinkedIn', 'Indeed', 'SimplyHired', 'Monster', 'Total')]
-
+top_10_soft <- ds_skills_soft[1:10,c(1,3:7)]
+top_10_soft
 ```
 
  
-
-***
-```{r}
-#Arrange data from largest to smallest by the Totals column
-ds_skills_soft <- arrange(ds_skills_soft, desc(Total))
-
-#Filter out only the Top 10 non-technical skills
-top_10_soft <- ds_skills_soft[1:10,c(1,3:7)]
-
-```
 ***
  Top Ten Non-Technical skills as a percentage of total Data Science jobs
 
 ```{r, include=FALSE}
-y <- plot_ly(top_10_soft, x = ~ top_10_soft, y = top_10_soft$Total, type = 'bar', name = top_10_soft$Keyword)
+p <- plot_ly(ds_skills_soft, x = ~ ds_skills_soft, y = ds_skills_soft$Total, type = 'bar', name = ds_skills_soft$Keyword)
+
 ```
 
 
 ```{r}
-y
+p
 ```
 
 
@@ -179,16 +173,14 @@ y
 
 Data transformations for visualization
 
-```{r}
-ds_skills_tech <- filter(ds_skills, ds_skills$Skill_Set == "Tech")
-
-head(ds_skills_tech, 5)
-```
 
 
 
 ***
 ```{r}
+
+ds_skills_tech <- filter(ds_skills, ds_skills$Skill_Set == "Tech")
+
 #Arrange data from largest to smallest by the Totals column
 ds_skills_tech <- arrange(ds_skills_tech, desc(Total))
 
@@ -217,6 +209,7 @@ Top 10 Tech Skills as an average pecentage of total data science jobs by job sit
 
 ```{r, eval=TRUE, message = FALSE, warning=FALSE}
 top_10_tech_visual <- data.frame("Keyword"=top_10_tech, top_10_tech)
+
 data <- top_10_tech_visual[,c('Keyword', 'LinkedIn', 'Indeed', 'SimplyHired', 'Monster', 'Total')]
 ```
 
@@ -224,11 +217,11 @@ data <- top_10_tech_visual[,c('Keyword', 'LinkedIn', 'Indeed', 'SimplyHired', 'M
 
 ```{r, eval=TRUE, message = FALSE, warning=FALSE, include=FALSE}
 s <- plot_ly(data, x = ~Keyword, y = ~LinkedIn, type = 'bar', name = "Linkedin") %>%
-  add_trace(y = ~Indeed, name = "Indeed") %>% 
-  add_trace(y = ~SimplyHired, name = "SimplyHired") %>% 
-  add_trace(y = ~Monster, name = "Monster") %>% 
-  add_trace(y = ~Total, name = "Average") %>% 
-  layout(title = 'Technical Skills by Job Sites', yaxis = list(title = '% of Data Science Jobs'), xaxis = list(title = 'Tech Skills'), barmode = 'group')
+add_trace(y = ~Indeed, name = "Indeed") %>% 
+add_trace(y = ~SimplyHired, name = "SimplyHired") %>% 
+add_trace(y = ~Monster, name = "Monster") %>% 
+add_trace(y = ~Total, name = "Average") %>% 
+layout(title = 'Technical Skills by Job Sites', yaxis = list(title = '% of Data Science Jobs'), xaxis = list(title = 'Tech Skills'), barmode = 'group')
 ```
 
 
@@ -254,11 +247,11 @@ data2 <- top_10_soft_visual[,c('Keyword', 'LinkedIn', 'Indeed', 'SimplyHired', '
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE, include=FALSE}
 t <- plot_ly(data2, x = ~Keyword, y = ~LinkedIn, type = 'bar', name = "Linkedin") %>%
-  add_trace(y = ~Indeed, name = "Indeed") %>% 
-  add_trace(y = ~SimplyHired, name = "SimplyHired") %>% 
-  add_trace(y = ~Monster, name = "Monster") %>% 
-  add_trace(y = ~Total, name = "Average") %>% 
-  layout(title = 'Non-Technical Skills by Job Sites', yaxis = list(title = '% of Data Science Jobs'), xaxis = list(title = 'Non-Tech Skills'), barmode = 'group')
+add_trace(y = ~Indeed, name = "Indeed") %>% 
+add_trace(y = ~SimplyHired, name = "SimplyHired") %>% 
+add_trace(y = ~Monster, name = "Monster") %>% 
+add_trace(y = ~Total, name = "Average") %>% 
+layout(title = 'Non-Technical Skills by Job Sites', yaxis = list(title = '% of Data Science Jobs'), xaxis = list(title = 'Non-Tech Skills'), barmode = 'group')
 ```
 
 
@@ -281,8 +274,8 @@ head(ds_skills_soft, 2)
 
 There are many skills and skill-sets that employers are looking for when hiring a data-scientist. Given that Data Science is amultidisciplinary field, it is only fitting that there are both Techology based skills and Soft skills that companies look for in a data science. 
 
-The top Techology skill that employers are looking for when hiring a data scientist, according to this dataset, is AWS. 
+The top Techology skill that employers are looking for when hiring a data scientist, according to this dataset, is Python. 
 
-The top Soft skill that employers are looking for when hiring a data scientist, according to this dataset, is Software Development.
+The top Soft skill that employers are looking for when hiring a data scientist, according to this dataset, is Analysis.
 
-The top Overall skill that employers are looking for when hiring a data scientist, according to this dataset, is AWS.
+The top Overall skill that employers are looking for when hiring a data scientist, according to this dataset, is Analysis.
