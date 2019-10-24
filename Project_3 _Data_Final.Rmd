@@ -13,7 +13,7 @@ library(RCurl)
 library(knitr)
 library(dplyr)
 library(plyr)
-library(plyr)
+library(tidyr)
 library(plotly)
 library(tidyselect)
 library(tidyverse)
@@ -151,7 +151,7 @@ ds_skills$SimplyHired <- ((ds_skills$SimplyHired)/(SimplyHired))*100
 ds_skills$Monster <- ((ds_skills$Monster)/((Monster)))*100
 ds_skills$Total <- ((ds_skills$Total/((Total))))*100
 dim(ds_skills)
-head(ds_skills, 52)
+head(ds_skills)
 ```
 
 
@@ -162,7 +162,7 @@ head(ds_skills, 52)
 ```{r}
 ds_skills_soft <- filter(ds_skills, ds_skills$Skill_Set == "Soft")
 dim(ds_skills_soft)
-head(ds_skills_soft, 20)
+head(ds_skills_soft)
 ds_skills_soft <- arrange(ds_skills_soft, desc(Total))
 head(ds_skills_soft, 2)
 #Top 10 soft skills
@@ -196,7 +196,7 @@ data_soft <- top_10_soft_visual[,c('Keyword', 'LinkedIn', 'Indeed', 'SimplyHired
 ds_skills_soft <- filter(ds_skills, ds_skills$Skill_Set == "Soft")
 dim(ds_skills_soft)
 # View first 20 non-technical skills
-head(ds_skills_soft, 20)
+head(ds_skills_soft)
 #Arrange data from largest to smallest by the Totals column
 ds_skills_soft <- arrange(ds_skills_soft, desc(Total))
 #Filter out only the Top 10 non-technical skills
@@ -213,7 +213,7 @@ top_10_soft
 ds_skills_tech <- filter(ds_skills, ds_skills$Skill_Set == "Tech")
 dim(ds_skills_tech)
 # View first 20 skills
-head(ds_skills_tech, 37)
+head(ds_skills_tech)
 #Arrange data from largest to smallest by the Totals column
 ds_skills_tech <- arrange(ds_skills_tech, desc(Total))
 #Filter out only the Top 10 technical skills
@@ -288,8 +288,8 @@ head(ds_skills_soft, 2)
 
 There are many skills and skill-sets that employers are looking for when hiring a data-scientist. Given that Data Science is amultidisciplinary field, it is only fitting that there are both Techology based skills and Soft skills that companies look for in a data science. 
 
-The top Techology skill that employers are looking for when hiring a data scientist, according to this dataset, is AWS. 
+The top Techology skill that employers are looking for when hiring a data scientist, according to this dataset, is Python and R. 
 
-The top Soft skill that employers are looking for when hiring a data scientist, according to this dataset, is Software Development.
+The top Soft skill that employers are looking for when hiring a data scientist, according to this dataset, is Analysis and Machine Lerning.
 
-The top Overall skill that employers are looking for when hiring a data scientist, according to this dataset, is AWS.
+The top Overall skill that employers are looking for when hiring a data scientist, according to this dataset, is Python.
